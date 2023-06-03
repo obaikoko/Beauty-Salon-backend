@@ -10,10 +10,8 @@ const createProduct = asyncHandler(async (req, res) => {
     const uploadedResponse = await cloudinary.uploader.upload(fileStr, {
       upload_preset: 'jesse',
     });
-    console.log(name);
-    console.log(description);
 
-    const product = await Products.create({
+    const products = await Products.create({
       name,
       image: {
         publicId: uploadedResponse.public_id,
@@ -22,7 +20,9 @@ const createProduct = asyncHandler(async (req, res) => {
         description,
       },
     });
-    res.json(product);
+
+   
+    res.json('Image created successfully');
   } catch (error) {
     console.error(error);
     res.status(500).json({ msg: 'Something went wrong' });
@@ -36,9 +36,13 @@ const getProducts = asyncHandler(async (req, res) => {
     throw new Error('No product has been created yet');
   }
   const images = products.map((product) => {
+
+        let imageUrl = product.image.url;
+        imageUrl = imageUrl.replace('/upload/', '/upload/w_500,h_300/');
     return {
+      Id: product._id,
       name: product.name,
-      url: product.image.url,
+      url: imageUrl,
       desc: product.image.description,
     };
   });
@@ -48,9 +52,15 @@ const getProducts = asyncHandler(async (req, res) => {
 const updateProduct = (req, res) => {
   res.send('This is update route');
 };
-const deleteProduct = (req, res) => {
-  res.send('This is delete route');
-};
+const deleteProduct = asyncHandler(async (req, res) => {
+  const product = await Products.findById(req.params.id);
+  if (!product) {
+    res.status(400);
+    throw new Error('product not found');
+  }
+  await product.remove();
+  res.status(200).json(req.params.id);
+});
 
 module.exports = {
   createProduct,

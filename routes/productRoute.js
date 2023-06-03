@@ -7,7 +7,8 @@ const {
 } = require('../controllers/productController');
 const router = express.Router();
 
-router.route('/').post(createProduct).get(getProducts)
+router.route('/').get(getProducts)
+router.route('/upload').post(createProduct)
 router.route('/:id').put(updateProduct).delete(deleteProduct);
 
 module.exports = router;
