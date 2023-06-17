@@ -9,6 +9,7 @@ const createProduct = asyncHandler(async (req, res) => {
     const fileStr = req.body.data;
     const uploadedResponse = await cloudinary.uploader.upload(fileStr, {
       upload_preset: 'jesse',
+      transformation: [{ width: 200, height: 200, crop: 'scale' }],
     });
 
     const products = await Products.create({
@@ -38,7 +39,7 @@ const getProducts = asyncHandler(async (req, res) => {
   const images = products.map((product) => {
 
         let imageUrl = product.image.url;
-        imageUrl = imageUrl.replace('/upload/', '/upload/w_500,h_300/');
+        imageUrl = imageUrl.replace('/upload/', '/upload/w_300,h_300/');
     return {
       Id: product._id,
       name: product.name,
